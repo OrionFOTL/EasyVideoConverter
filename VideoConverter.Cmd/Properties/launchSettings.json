@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "VideoConverter.Cmd": {
+      "commandName": "Project"
+    }
+  }
+}
