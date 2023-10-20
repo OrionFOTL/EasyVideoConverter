@@ -12,7 +12,7 @@ public class XFFmpegVideoMetadataRetriever : IVideoMetadataRetriever
 
         var fileMetadata = await engine.GetMetaDataAsync(new InputFile(inputFile), CancellationToken.None);
 
-        if (fileMetadata.VideoData.BitRateKbs is null)
+        if (fileMetadata is null or { VideoData: null })
         {
             throw new ArgumentException("Input file is not a video file", nameof(inputFile));
         }
