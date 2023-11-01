@@ -36,12 +36,12 @@ internal class FormatSubmenu : ISubmenu
         {
             var input = Console.ReadKey();
 
-            if (input.Key is ConsoleKey.D1)
+            if (input.KeyChar is '1')
             {
                 _format = VideoFormat.H264;
                 break;
             }
-            else if (input.Key is ConsoleKey.D2)
+            else if (input.KeyChar is '2')
             {
                 _format = VideoFormat.H265;
                 break;
