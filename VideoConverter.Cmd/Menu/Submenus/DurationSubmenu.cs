@@ -1,4 +1,4 @@
-﻿using VideoConverter.Cmd.Menu.Submenus.Base;
+using VideoConverter.Cmd.Menu.Submenus.Base;
 using VideoConverter.Conversion.Models;
 using VideoConverter.VideoInformation.Models;
 
@@ -92,9 +92,10 @@ internal class DurationSubmenu : ISubmenu
             }
 
             _end = endTime;
-            EditStatus = EditStatus.Customised;
-            return;
+            break;
         }
+
+        EditStatus = EditStatus.Customised;
     }
 
     public ConversionParameters SetConversionParameter(ConversionParameters parameters) => parameters with { ClipRange = new(_start, _end) };
