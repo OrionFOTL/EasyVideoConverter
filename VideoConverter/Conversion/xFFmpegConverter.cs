@@ -28,8 +28,8 @@ public class XFFMpegConverter : IVideoConverter
                 VideoFormat.H265 => VideoCodec.libx265,
                 VideoFormat.H264 or _ => VideoCodec.libx264
             },
-            VideoSize = conversionOptions.Height is not null ? VideoSize.Custom : VideoSize.Default,
-            CustomHeight = conversionOptions.Height,
+            VideoSize = conversionOptions.Resolution is not null ? VideoSize.Custom : VideoSize.Default,
+            CustomHeight = conversionOptions.Resolution?.Height,
             Seek = conversionOptions.ClipRange?.Start,
             MaxVideoDuration = conversionOptions.ClipRange?.End - conversionOptions.ClipRange?.Start,
         };
