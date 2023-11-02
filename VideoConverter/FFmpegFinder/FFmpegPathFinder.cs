@@ -13,8 +13,6 @@ public class FFmpegPathFinder : IFFmpegFinder
         var pathDirectories = Environment.GetEnvironmentVariable("PATH")?.Split(';') ?? Enumerable.Empty<string>();
         var searchedDirectories = new[] { AppDomain.CurrentDomain.BaseDirectory }.Concat(pathDirectories);
 
-        Console.WriteLine("Searched: " + string.Join(";", searchedDirectories));
-
         return searchedDirectories
             .Select(d => new FileInfo(Path.Combine(d, "ffmpeg.exe")))
             .FirstOrDefault(fileInfo => fileInfo.Exists);
