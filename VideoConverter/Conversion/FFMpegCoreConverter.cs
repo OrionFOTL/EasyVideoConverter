@@ -8,6 +8,10 @@ namespace VideoConverter.Conversion;
 
 public class FFMpegCoreConverter : IVideoConverter
 {
+    private readonly IVideoMetadataRetriever _videoMetadataRetriever;
+
+    public FFMpegCoreConverter(IVideoMetadataRetriever videoMetadataRetriever) => _videoMetadataRetriever = videoMetadataRetriever;
+
     public event EventHandler<ConversionProgressEventArgs> ConversionProgress = delegate { };
     public event EventHandler ConversionComplete = delegate { };
     public event EventHandler FirstPassComplete = delegate { };
@@ -38,7 +42,7 @@ public class FFMpegCoreConverter : IVideoConverter
 
         var duration = conversionOptions.ClipRange is ClipRange clipRange
             ? clipRange.End - clipRange.Start
-            : FFProbe.Analyse(conversionOptions.InputFilePath).Duration;
+            : (await _videoMetadataRetriever.GetVideoData(new FileInfo(conversionOptions.InputFilePath))).Duration;
 
         if (conversionOptions.MaxFileSizeInMegabytes is double maxMegabytes and > 0)
         {
