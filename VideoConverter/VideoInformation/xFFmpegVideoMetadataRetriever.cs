@@ -1,4 +1,5 @@
 ﻿using FFmpeg.NET;
+using VideoConverter.FFmpegCheckers;
 using VideoConverter.Models;
 using VideoConverter.VideoInformation.Models;
 
@@ -6,9 +7,13 @@ namespace VideoConverter.VideoInformation;
 
 public class XFFmpegVideoMetadataRetriever : IVideoMetadataRetriever
 {
+    private readonly IFFmpegFinder _ffmpegFinder;
+
+    public XFFmpegVideoMetadataRetriever(IFFmpegFinder ffmpegFinder) => _ffmpegFinder = ffmpegFinder;
+
     public async Task<VideoMetadata> GetVideoData(FileInfo inputFile)
     {
-        var engine = new Engine();
+        var engine = new Engine(_ffmpegFinder.FindFFmpegExecutable()?.FullName);
 
         var fileMetadata = await engine.GetMetaDataAsync(new InputFile(inputFile), CancellationToken.None);
 
