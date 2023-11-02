@@ -26,7 +26,7 @@ if (args is not [var filePath, ..])
 
 var serviceCollection = new ServiceCollection()
     .AddTransient<IFFmpegDownloader, GithubFFmpegDownloader>()
-    .AddTransient<IFFmpegFinder, FFmpegPathFinder>()
+    .AddSingleton<IFFmpegFinder, FFmpegPathFinder>()
     .AddTransient<IVideoMetadataRetriever, XFFmpegVideoMetadataRetriever>()
     .AddTransient<IVideoConverter, FFMpegCoreConverter>()
     .AddTransient<MainMenu>()
