@@ -1,6 +1,7 @@
 ﻿using FFmpeg.NET;
 using FFmpeg.NET.Enums;
 using VideoConverter.Conversion.Models;
+using VideoConverter.VideoInformation;
 using VideoFormat = VideoConverter.Models.VideoFormat;
 
 namespace VideoConverter.Conversion;
@@ -31,7 +32,6 @@ public class XFFMpegConverter : IVideoConverter
             CustomHeight = conversionOptions.Height,
             Seek = conversionOptions.ClipRange?.Start,
             MaxVideoDuration = conversionOptions.ClipRange?.End - conversionOptions.ClipRange?.Start,
-            VideoCodecPreset = VideoCodecPreset.fast,
         };
 
         var ffmpeg = new Engine();
@@ -47,11 +47,9 @@ public class XFFMpegConverter : IVideoConverter
 
         if (conversionOptions.MaxFileSizeInMegabytes is double maxMegabytes and > 0)
         {
-            var maxKilobits = maxMegabytes * 8000;
             var duration = libConversionOptions.MaxVideoDuration ?? (await ffmpeg.GetMetaDataAsync(inputFile, CancellationToken.None)).Duration;
 
-            int kilobitsPerSecond = (int)(maxKilobits / duration.TotalSeconds);
-            libConversionOptions.VideoBitRate = kilobitsPerSecond;
+            (libConversionOptions.AudioBitRate, libConversionOptions.VideoBitRate) = MaxBitratesCalculator.GetMaxBitrates(maxMegabytes, duration);
 
             // pass 1
             var nulFile = new OutputFile("NUL");
