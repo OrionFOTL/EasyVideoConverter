@@ -18,7 +18,7 @@ internal class MainMenu
 {
     private readonly string _lastSettingsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "lastUsedSettings.json");
     private readonly FileInfo _inputFile;
-    private readonly IFFmpegChecker _ffmpegChecker;
+    private readonly IFFmpegFinder _ffmpegChecker;
     private readonly IVideoMetadataRetriever _videoMetadataRetriever;
     private readonly IVideoConverter _converter;
     private readonly IFFmpegDownloader _ffmpegDownloader;
@@ -31,7 +31,7 @@ internal class MainMenu
 
     public MainMenu(
         IOptions<InputFilePath> inputFilePath,
-        IFFmpegChecker ffmpegChecker,
+        IFFmpegFinder ffmpegChecker,
         IVideoMetadataRetriever videoMetadataRetriever,
         IVideoConverter converter,
         IFFmpegDownloader ffmpegDownloader,
@@ -129,7 +129,7 @@ internal class MainMenu
 
     private async Task DownloadFFmpegIfMissing()
     {
-        if (_ffmpegChecker.FFMpegExists())
+        if (_ffmpegChecker.FindFFmpegExecutable() is not null)
         {
             return;
         }

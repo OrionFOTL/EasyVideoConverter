@@ -8,6 +8,7 @@ using VideoConverter.Cmd.Menu.Submenus.Base;
 using VideoConverter.Conversion;
 using VideoConverter.Downloader;
 using VideoConverter.FFmpegCheckers;
+using VideoConverter.FFmpegFinder;
 using VideoConverter.Models;
 using VideoConverter.VideoInformation;
 
@@ -25,7 +26,7 @@ if (args is not [var filePath, ..])
 
 var serviceCollection = new ServiceCollection()
     .AddTransient<IFFmpegDownloader, GithubFFmpegDownloader>()
-    .AddTransient<IFFmpegChecker, XFFmpegChecker>()
+    .AddTransient<IFFmpegFinder, FFmpegPathFinder>()
     .AddTransient<IVideoMetadataRetriever, XFFmpegVideoMetadataRetriever>()
     .AddTransient<IVideoConverter, FFMpegCoreConverter>()
     .AddTransient<MainMenu>()

@@ -1,6 +1,7 @@
 ﻿using FFMpegCore;
 using FFMpegCore.Enums;
 using VideoConverter.Conversion.Models;
+using VideoConverter.FFmpegCheckers;
 using VideoConverter.Models;
 using VideoConverter.VideoInformation;
 
@@ -9,8 +10,15 @@ namespace VideoConverter.Conversion;
 public class FFMpegCoreConverter : IVideoConverter
 {
     private readonly IVideoMetadataRetriever _videoMetadataRetriever;
+    private readonly IFFmpegFinder _ffmpegFinder;
 
-    public FFMpegCoreConverter(IVideoMetadataRetriever videoMetadataRetriever) => _videoMetadataRetriever = videoMetadataRetriever;
+    public FFMpegCoreConverter(
+        IVideoMetadataRetriever videoMetadataRetriever,
+        IFFmpegFinder ffmpegFinder)
+    {
+        _videoMetadataRetriever = videoMetadataRetriever;
+        _ffmpegFinder = ffmpegFinder;
+    }
 
     public event EventHandler<ConversionProgressEventArgs> ConversionProgress = delegate { };
     public event EventHandler ConversionComplete = delegate { };
@@ -44,6 +52,12 @@ public class FFMpegCoreConverter : IVideoConverter
             ? clipRange.End - clipRange.Start
             : (await _videoMetadataRetriever.GetVideoData(new FileInfo(conversionOptions.InputFilePath))).Duration;
 
+        var ffOptions = new FFOptions
+        {
+            BinaryFolder = _ffmpegFinder.FindFFmpegExecutable()?.Directory?.FullName
+                ?? throw new InvalidOperationException("FFmpeg.exe not found")
+        };
+
         if (conversionOptions.MaxFileSizeInMegabytes is double maxMegabytes and > 0)
         {
             var (audioKilobitsPerSecond, videoKilobitsPerSecond) = MaxBitratesCalculator.GetMaxBitrates(maxMegabytes, duration);
@@ -61,7 +75,7 @@ public class FFMpegCoreConverter : IVideoConverter
                         : "-pass 1 -f null");
                 })
                 .NotifyOnProgress(percent => ConversionProgress?.Invoke(this, new() { ProcessedDuration = duration * percent / 100, TotalDuration = duration }), duration)
-                .ProcessAsynchronously(throwOnError: true);
+                .ProcessAsynchronously(throwOnError: true, ffOptions);
 
             FirstPassComplete?.Invoke(this, new());
 
@@ -78,7 +92,7 @@ public class FFMpegCoreConverter : IVideoConverter
                         : "-pass 2");
                 })
                 .NotifyOnProgress(percent => ConversionProgress?.Invoke(this, new() { ProcessedDuration = duration * percent / 100, TotalDuration = duration }), duration)
-                .ProcessAsynchronously(throwOnError: true);
+                .ProcessAsynchronously(throwOnError: true, ffOptions);
 
             ConversionComplete?.Invoke(this, new());
         }
@@ -88,7 +102,7 @@ public class FFMpegCoreConverter : IVideoConverter
                 .FromFileInput(conversionOptions.InputFilePath)
                 .OutputToFile(conversionOptions.OutputFileName, true, AddConversionOptions)
                 .NotifyOnProgress(percent => ConversionProgress?.Invoke(this, new() { ProcessedDuration = duration * percent / 100, TotalDuration = duration }), duration)
-                .ProcessAsynchronously(throwOnError: true);
+                .ProcessAsynchronously(throwOnError: true, ffOptions);
         }
     }
 }
