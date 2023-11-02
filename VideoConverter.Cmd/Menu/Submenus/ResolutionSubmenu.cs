@@ -38,13 +38,13 @@ internal class ResolutionSubmenu : ISubmenu
         }
     }
 
-    public ConversionParameters SetConversionParameter(ConversionParameters parameters) => parameters with { Height = _resolution.Height };
+    public ConversionParameters SetConversionParameter(ConversionParameters parameters) => parameters with { Resolution = _resolution };
 
     public void LoadSavedValues(ConversionParameters loadedParameters)
     {
-        if (loadedParameters.Height is int height)
+        if (loadedParameters.Resolution is Resolution resolution)
         {
-            _resolution = _resolution.ResizeToHeight(height);
+            _resolution = _resolution.ResizeToHeight(resolution.Height);
             EditStatus = EditStatus.Customised;
         }
     }

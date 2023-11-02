@@ -51,9 +51,9 @@ internal class OutputFileNameSubmenu : ISubmenu
     {
         var str = Path.GetFileNameWithoutExtension(initialParameters.InputFilePath);
 
-        if (initialParameters.Height is not null)
+        if (initialParameters.Resolution is Resolution resolution)
         {
-            str += $"_{initialParameters.Height}p";
+            str += $"_{resolution.Height}p";
         }
 
         if (initialParameters.Fps is not null)

@@ -1,4 +1,5 @@
 ﻿using VideoConverter.Models;
+using VideoConverter.VideoInformation.Models;
 
 namespace VideoConverter.Conversion.Models;
 
@@ -12,7 +13,7 @@ public record class ConversionParameters
 
     public VideoFormat? Format { get; init; }
 
-    public int? Height { get; init; }
+    public Resolution? Resolution { get; init; }
 
     public double? MaxFileSizeInMegabytes { get; init; }
 
